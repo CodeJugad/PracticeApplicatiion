@@ -10,27 +10,38 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.example.practiceapplicatiion.databinding.ActivityMainBinding
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-class MainActivity : AppCompatActivity() {
+class MyActivity : AppCompatActivity() {
+    private lateinit var viewModel: MyViewModel
+
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        val textView = findViewById<TextView>(R.id.textview)
+        val btn = findViewById<Button>(R.id.btn)
 
-        // Create a ViewModel instance and set it to the binding
-        val viewModel = MyViewModel()
-        binding.viewModel = viewModel
-        binding.lifecycleOwner = this // For LiveData updates to work
+        val apiService = Retrofit.Builder()
+            .baseUrl("https://jsonplaceholder.typicode.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(ApiService::class.java)
 
-//        binding.btn.setOnClickListener   -- if you want to apply
+        viewModel = ViewModelProvider(this, MyViewModelFactory(apiService))
+            .get(MyViewModel::class.java)
 
-        // Now, your UI elements are automatically bound to the ViewModel's properties and methods.
+        viewModel.postLiveData.observe(this) { post ->
+            // Update UI with the fetched data
+            textView.text = post?.title
+        }
 
-        /*Data binding is a powerful library in Android that allows you to connect UI components
-        in your layout XML files directly to data sources in your app's code, such as ViewModel
-        objects. It simplifies the process of updating UI elements
-         and handling user interactions by automatically syncing the UI with the underlying data.
-        * */
+        btn.setOnClickListener {
+            viewModel.fetchPost()
+        }
     }
 }

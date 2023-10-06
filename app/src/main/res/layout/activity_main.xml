@@ -3,11 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-        <variable
-            name="viewModel"
-            type="com.example.practiceapplicatiion.MyViewModel" />
-    </data>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,14 +11,15 @@
         tools:context=".MainActivity">
 
         <TextView
+            android:id="@+id/textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{viewModel.text}" />
+            android:text="hello" />
 
         <Button
+            android:id="@+id/btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Change Text"
-            android:onClick="@{() -> viewModel.onButtonClick()}" />
+            android:text="Change Text" />
     </LinearLayout>
 </layout>
